@@ -1,0 +1,63 @@
+c#################### 此日志会一致更新到此项目结束 ###############################
+
+1 ，文件名前加字母，可避免 os.listdir(）的不按顺序读取。
+
+2，MRI 数据介绍：
+      1) For better demostration purpose, the four organ was labeled in ground folders with the intensity values below:
+          Liver ----------> 80
+          Right Kidney ---> 160
+          Left Kidney ----> 240
+          Spleen ---------> 255
+
+      2) T1-DUAL  sequence include both in-phase and out-phase images. 
+          Thats is why the amount of image files in T1DUAL folders are double amount of image files in of their ground folder.
+           LAbels in ground folders can be used for both in-phase and out-phase images.
+
+3，五大比赛类别：
+     Liver Segmentation(CT+MRI)
+     Liver Segmentation(CT only)
+     Liver Segmentation(MRI only)
+     Segmentation of abdominal organs(CT+MRI)
+     Segmentation of abdominal organs(MRI only)
+4, CT总数据量：1367 for train；1408 for test.   MRI 总数据量：1594 for train；1537 for test。
+
+5，Dense_Unet_mini() 不收敛，相同参数的Unet_mini()收敛。
+
+6，Unet 的效果没有 Dense_Unet的效果好。
+
+7，Dense_Unet的block大小为4时，模型不收敛。
+
+8，若没有特别指定dense_block的增长率，默认值为16。
+
+9，Unet_CA(在Unet的重建阶段加通道注意机制) 效果并不好。
+
+10,目前，Dense_Unet(前半部分用Dense_Block提取特征，然后直接用卷积和反卷积重建)的结果比单纯的Unet要好。
+
+11,Dense_Block的参数（归一化：1x1，增长率：16）为合适的选择。
+
+12,Dense_Block的大小为3时，效果有提升。
+
+13,学习率的衰减方式只有PCD是最好的。
+
+14,Res_Unet_CA, Res_Unet_PA 都不收敛。
+
+15,Res_Unet_PCA 没有效果。
+
+16,目前Dense_Unet_CA 效果最好。
+
+/***************************************************************************************************************************\
+/***************************************************************************************************************************\
+
+17,在全部的CT数据集上，Dense_Unet_CA在测试集结果：73.86；Dense_Unet在测试集结果：69.84.（验证了16的结果）。
+
+18,损失函数：huber_loss,L1 的效果都没有L2的好，可能原因：L1计算的损失过小，容易过拟合。
+
+19,为了使预测的label更接近与Ground Truth，引入了深度监管机制，效果不好。
+
+20,若pb文件中的place_holder的形状固定（不是None）,则测试的时候输入图片大小要和pb文件中的大小一致。其他情况可随意。。。
+
+21,有效的预处理方式：归一化，标准化， 直方图均衡，随机旋转，resize(256)。
+
+22,损失函数（MSE + 0.5DICE）有效果（将近1%的提升。
+
+
